@@ -83,12 +83,31 @@ export default function NeonGlobe({
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
   const [geoJsonData, setGeoJsonData] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [lastTouchTime, setLastTouchTime] = useState<number>(0);
 
-  // Frame ticker to evaluate "new" node purple decay
+  // Frame ticker to evaluate "new" node purple decay and auto-close panels
   useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(Date.now()), 1000);
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+      // Auto-close panel after 3 seconds of hover
+      if (hoveredNode && Date.now() - lastTouchTime > 3000) {
+        setHoveredNode(null);
+      }
+    }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [hoveredNode, lastTouchTime]);
+
+  // Close panel when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (hoveredNode) {
+        setHoveredNode(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [hoveredNode]);
 
   // Fetch true Geographical boundaries
   useEffect(() => {
@@ -267,12 +286,26 @@ export default function NeonGlobe({
             onPointerOver={(e) => {
               e.stopPropagation();
               setHoveredNode(node.id);
+              setLastTouchTime(Date.now());
               document.body.style.cursor = 'pointer';
             }}
             onPointerOut={(e) => {
               e.stopPropagation();
-              setHoveredNode(null);
+              // Don't immediately close on mobile - let timer handle it
+              if (e.pointerType !== 'touch') {
+                setHoveredNode(null);
+              }
               document.body.style.cursor = 'auto';
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setLastTouchTime(Date.now());
+              // Toggle panel on click/touch
+              if (hoveredNode === node.id) {
+                setHoveredNode(null);
+              } else {
+                setHoveredNode(node.id);
+              }
             }}
           >
             <icosahedronGeometry args={[0.02, 0]} />

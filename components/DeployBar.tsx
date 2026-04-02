@@ -63,7 +63,7 @@ export default function DeployBar({ onDeploy }: DeployBarProps) {
         <input
           type="text"
           placeholder="Add your city now..."
-          className="flex-1 w-full bg-transparent text-[#00e5ff] placeholder-[#00e5ff]/40 px-4 py-3 md:py-4 outline-none font-mono text-sm tracking-wide"
+          className="flex-1 w-full bg-transparent text-[#00e5ff] placeholder-[#00e5ff]/40 px-2 sm:px-4 py-3 md:py-4 outline-none font-mono text-sm tracking-wide"
           value={queryInput}
           onChange={(e) => setQueryInput(e.target.value)}
         />
@@ -72,7 +72,7 @@ export default function DeployBar({ onDeploy }: DeployBarProps) {
           disabled={loading}
           className="bg-[#00e5ff]/10 hover:bg-[#00e5ff]/30 transition-colors text-[#00e5ff] px-4 md:px-6 py-3 md:py-4 font-bold font-mono text-xs md:text-sm tracking-widest disabled:opacity-50 whitespace-nowrap"
         >
-          {loading ? "deplying.." : "DEPLOY"}
+          {loading ? "deploying.." : "DEPLOY"}
         </button>
       </form>
     </div>
